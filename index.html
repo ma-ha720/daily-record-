@@ -479,6 +479,8 @@
       }
       currentData.theme = selectedTheme;
       currentData.tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS[selectedTheme]));
+      currentData.records = [];
+      currentData.journeyCount = 0;
       saveData();
       applyTheme(selectedTheme);
       updateCurrentTime();
@@ -499,11 +501,20 @@
 
     function changeTheme(theme) {
       if (confirm('テーマを変更しますか？\nタスクはそのまま残ります。')) {
+        const oldTheme = currentData.theme;
         currentData.theme = theme;
         selectedTheme = theme;
+        
+        // タスクが空、または前のテーマのデフォルトタスクと同じ場合は新しいテーマのデフォルトに変更
+        if (!currentData.tasks || currentData.tasks.length === 0 || 
+            JSON.stringify(currentData.tasks) === JSON.stringify(DEFAULT_TASKS[oldTheme])) {
+          currentData.tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS[theme]));
+        }
+        
         saveData();
         applyTheme(theme);
         updateJourneyDisplay();
+        renderTaskList();
       }
     }
 
@@ -511,6 +522,13 @@
       const saved = localStorage.getItem('morningAppData');
       if (saved) {
         currentData = JSON.parse(saved);
+        // tasksが空の場合、デフォルトタスクを設定
+        if (!currentData.tasks || currentData.tasks.length === 0) {
+          if (currentData.theme && DEFAULT_TASKS[currentData.theme]) {
+            currentData.tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS[currentData.theme]));
+            saveData();
+          }
+        }
       }
     }
 
