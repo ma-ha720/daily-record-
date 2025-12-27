@@ -450,7 +450,8 @@
 
     function initApp() {
       loadData();
-      if (!currentData.theme) {
+      if (!currentData.theme || !currentData.tasks || currentData.tasks.length === 0) {
+        // データがない、またはタスクが空の場合はテーマ選択画面へ
         showThemeSelection();
       } else {
         selectedTheme = currentData.theme;
@@ -817,10 +818,9 @@
     }
 
     function resetAllData() {
-      if (confirm('本当に全データを削除しますか？\nこの操作は取り消せません！\n\n削除されるもの:\n・タスク設定\n・コレクション進捗\n・全ての記録')) {
+      if (confirm('本当に全データを削除しますか？\nこの操作は取り消せません！\n\n削除されるもの:\n・タスク設定\n・コレクション進捗\n・全ての記録\n\n※削除後、テーマ選択からやり直します')) {
         if (confirm('最終確認：本当に削除しますか？')) {
           localStorage.removeItem('morningAppData');
-          alert('全データを削除しました。\nページをリロードします。');
           location.reload();
         }
       }
